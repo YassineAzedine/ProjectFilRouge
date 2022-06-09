@@ -28,7 +28,7 @@ const {
 router.get("/api/user/:userId", getUser);
 router.get("/api/users",  getAllUsers);
 router.get("/api/user/photo/:userId", getUserPhoto);
-router.put("/api/users/:userId",  updateUser);
+router.put("/api/users/:userId",userAuth ,  updateUser);
 router.delete(
     "/api/users/:userId",
  
@@ -41,6 +41,7 @@ router.delete(
   .route("/api/user/remove/follow")
   .put( removeFollowing, removeFollower);
   router.param("userId", getUserById);
+
 
 
   //
