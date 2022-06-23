@@ -65,7 +65,10 @@ const userLogin = async (userCreds,role,res)=>{
       user_id:user._id,
       role:user.role,
       username:user.username,
-      email:user.email
+      email:user.email,
+      following:user.following ,
+      followers : user.followers,
+
     },
     SECRET ,
 
@@ -79,6 +82,8 @@ const userLogin = async (userCreds,role,res)=>{
       username:user.username,
       role:user.role,
       email:user.email,
+      following:user.following ,
+      followers : user.followers,
       token : `Bearer ${token}`,
       expiresIn:168
     };

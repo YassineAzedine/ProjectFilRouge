@@ -2,9 +2,9 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
 
+const Profile = require("../models/Profile");
 
 const getAllPosts = (req, res) => {
-console.log("🚀 ~ file: postController.js ~ line 7 ~ getAllPosts ~ req", req)
     let following = req.user.following;
     following.push(req.user._id);
     Post.find({ postedBy: { $in: req.user.following } })
@@ -17,9 +17,42 @@ console.log("🚀 ~ file: postController.js ~ line 7 ~ getAllPosts ~ req", req)
             res.json(posts);
         });
 };
+const getAllPostsByAdmin = (req , res)=>{
+
+    Post.find()
+    .populate("comments", "text created")
+    .populate("comments.postedBy", "_id name")
+    .populate("postedBy", "_id name email")
+
+
+    .exec((err, posts) => {
+            if (err) res.json({ error: err.message });
+            res.json(posts);
+        });
+
+
+
+}
+const getAllPostsrecruteur = (req, res) => {
+    
+
+
+    // following.push(req.user._id);
+    
+    Post.find({postedBy: req.user })
+   
+        .exec((err, posts) => {
+
+            if (err) res.json({ error: err });
+
+            res.json(posts);
+
+        });
+};
 
 const userPosts = (req, res) => {
-    Post.find({ postedBy: req.user._id })
+              
+    Post.find({ postedBy: req.profile._id })
     
         // .populate("comments", "text created")
         // .populate("comments.postedBy", "_id name")
@@ -55,14 +88,33 @@ console.log("🚀 ~ file: postController.js ~ line 47 ~ isOwner ~ req", req.auth
 };
 
 const addPost = (req, res) => {
-console.log("🚀 ~ file: postController.js ~ line 51 ~ addPost ~ req", req)
+    console.log("🚀 ~ file: jobofferController.js ~ line 66 ~ addOffre ~ ddldldl", req.file)
+
     const { text } = req.body;
     let post = new Post({ text, postedBy: req.user._id });
+    if (req.file) {
+        post.image = req.file.originalname
+      }
     post.save((err, data) => {
         if (err) res.json({ error: err });
         res.json(data);
     });
 };
+
+const addPostrecruteur = (req, res) => {
+    console.log("🚀 ~ file: postController.js ~ line 58 ~ addPost ~ req", req.file)
+    
+    console.log("🚀 ~ file: postController.js ~ line 51 ~ addPost ~ req", req.body)
+        const { text } = req.body;
+        let post = new Post({ text, postedBy: req.user._id });
+        if (req.file) {
+            post.image = req.file.originalname
+          }
+        post.save((err, data) => {
+            if (err) res.json({ error: err });
+            res.json(data);
+        });
+    };
 
 const deletePost = (req, res) => {
     let postToDelete = req.post;
@@ -129,7 +181,34 @@ const deleteComment = (req, res) => {
         res.json(result);
     });
 };
+const addProfile = (req, res) => {
+console.log("🚀 ~ file: postController.js ~ line 185 ~ addProfile ~ req", req.body)
 
+    const { phone } = req.body;
+    const { pdf } = req.body;
+
+
+    const offreid = req.params.offreid
+    let profile = new Profile({  phone, pdf, postedBy: req.user._id ,joboffre_id:offreid });
+  
+      profile.save((err, data) => {
+        if (err) res.json({ error: err });
+        res.json({
+            message: "votre candidature a bien été reçue ",
+            success: true
+        });
+    });
+};
+const getProfile = (req, res) => {
+    Profile.find()
+    .populate("postedBy", "_id name username email")
+ 
+    .exec((err, profiles) => {
+        if (err) res.json({ error: err });
+        res.json(profiles);
+    });
+    };
+    
 module.exports = {
     getAllPosts,
     addPost,
@@ -141,5 +220,11 @@ module.exports = {
     unlikePost,
     addComment,
     deleteComment,
+    addPostrecruteur,
+    addProfile,
+    getAllPostsrecruteur,
+    getAllPostsByAdmin,
+    getProfile,
+    
 };
 

@@ -16,6 +16,8 @@ const createUser = (req, res) => {
 };
 
 const getUserById = (req, res, next, id) => {
+  
+
   User.findById(id)
     .populate("following", "_id name")
     .populate("followers", "_id name")
@@ -36,8 +38,10 @@ const getAllUsers = (req, res) => {
   User.find((err, users) => {
     if (err || !users) return res.json({ error: err });
     res.json(users);
-  }).select("name email about image createdAt");
+  
+  }).select("name email about role username image createdAt");
 };
+
 
 const updateUser = (req, res) => {  
   // console.log(req.body);
@@ -72,17 +76,20 @@ const deleteUser = (req, res) => {
 };
 
 const getUserPhoto = (req, res) => {
+  
   if (req.profile.image.data) {
     res.set("Content-Type", req.profile.image.contentType);
     return res.send(req.profile.image.data);
   } else {
     return res.sendFile(
-      "c:/xampp/htdocs/react-social-network-channel/backend/images/user.png"
+      "c:/xampp/htdocs/ProjectFilRouge/backend/images/user.png"
     );
   }
 };
 
 const addFollowing = (req, res, next) => {
+
+  
   User.findByIdAndUpdate(
     req.body.userId,
     { $push: { following: req.body.followId } },
@@ -117,7 +124,7 @@ const removeFollowing = (req, res, next) => {
     (err, result) => {
       if (err) return res.json({ error: err });
       next();
-    }
+    }     
   );
 };
 
